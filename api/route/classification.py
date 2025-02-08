@@ -40,5 +40,22 @@ async def classify_csr_initiative(description: Input):
         "response": json.loads(response["text"])
     })
 
+@router.post("/materiality-assessment")
+async def get_materiality_assessment(description: Input):
+    # prompt_thing
+    response = None # populate here
+    """this should be a list of dictionaries - with each element in the list having the following schema
+    {
+        "name": "Energy",
+        "description": "Energy is the main resource requirement for an IT industry bla bla"
+    }
+    
+    same thing for each entry in the list - ordered by importance.
+    """
+
+    return JSONResponse({
+        "response": response
+    })
+
 def setup(app):
     app.include_router(router)
