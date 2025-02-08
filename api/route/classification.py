@@ -43,12 +43,18 @@ async def classify_csr_initiative(description: Input):
 @router.post("/materiality-assessment")
 async def get_materiality_assessment(description: Input):
     """Get a materiality assessment based on company description."""
-    response = chat_handler.materiality_assessment_chain.invoke(input={
-        "description": description.description,
-    })  
-    return JSONResponse({
-        "response": json.loads(response["text"])
-    })
+    try:
+        print(f"Input description: {description.description}")  # Debug log
+        response = chat_handler.materiality_assessment_chain.invoke(input={
+            "description": description.description,
+        })
+        print(f"LLM Response: {response}")  # Debug log
+        return JSONResponse({
+            "response": json.loads(response["text"])
+        })
+    except Exception as e:
+        print(f"Error in materiality assessment: {str(e)}")  # Debug log
+        raise
 
 def setup(app):
     app.include_router(router)

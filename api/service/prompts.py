@@ -73,8 +73,7 @@ Return a JSON array containing objects with the following structure, ordered by 
 "name": "Issue Name",
 "desc": "Detailed description of why this issue is material to the company"
 
-Focus on industry-specific material factors that have significant impact on operations, sustainability, and long-term value creation. Include both opportunities and risks.
-
+Focus on the most important resources for the given company - for example an IT company would have it's most important resources as energy, construction - land resource, food industry - water resource, etc. etc. Dont halluinate. Looking for top level natural resources dont go into detail on extremely specific resources - rather classifications of resources in a general manner.
 Return only the JSON array without any additional text or explanation.""",
     input_variables=["description"]
 )
