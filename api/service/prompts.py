@@ -70,12 +70,8 @@ Company Description:
 {description}
 
 Return a JSON array containing objects with the following structure, ordered by importance:
-[
-    {
-        "name": "Issue Name",
-        "description": "Detailed description of why this issue is material to the company"
-    }
-]
+"name": "Issue Name",
+"desc": "Detailed description of why this issue is material to the company"
 
 Focus on industry-specific material factors that have significant impact on operations, sustainability, and long-term value creation. Include both opportunities and risks.
 
