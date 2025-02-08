@@ -1,13 +1,16 @@
 import json
 from typing import Optional
+import csv
+from io import StringIO
+from fastapi.responses import StreamingResponse
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from starlette.responses import JSONResponse
-from sqlalchemy import func
+from sqlalchemy import func, desc
 
-from api.service.database import Database, CSRRecord, EmployeeReview
+from api.service.database import Database, CSRRecord, EmployeeReview, EmployeeEvaluation, User
 
 prefix = "/insights"
 router = APIRouter(prefix=prefix)
@@ -149,6 +152,59 @@ async def get_diversity_metrics(db_session: Session = Depends(db.get_db)):
         "status": "success",
         "data": response.dict()
     })
+
+@router.get("/report")
+async def get_user_report(user_id: str, db_session: Session = Depends(db.get_db)):
+    # Get CSR records for the user
+    csr_records = db_session.query(CSRRecord).filter(CSRRecord.user_id == user_id).all()
+    
+    # Get employee evaluation with highest processed count
+    top_evaluation = db_session.query(EmployeeEvaluation).order_by(desc(EmployeeEvaluation.processed_count)).first()
+    
+    # Get user's onboarding data
+    user = db_session.query(User).filter(User.id == user_id).first()
+    
+    # Create CSV file in memory
+    output = StringIO()
+    writer = csv.writer(output)
+    
+    # Write headers
+    writer.writerow(['Data Type', 'Field', 'Value'])
+    
+    # Write CSR Records
+    for record in csr_records:
+        writer.writerow(['CSR Record', 'ID', record.id])
+        writer.writerow(['CSR Record', 'Name', record.name])
+        writer.writerow(['CSR Record', 'Description', record.description])
+        writer.writerow(['CSR Record', 'Start Date', record.start_date])
+        writer.writerow(['CSR Record', 'End Date', record.end_date])
+        writer.writerow(['CSR Record', 'Track', record.track])
+        writer.writerow(['CSR Record', 'Complete', record.complete])
+        
+    # Write top evaluation data
+    if top_evaluation:
+        writer.writerow(['Top Evaluation', 'ID', top_evaluation.id])
+        writer.writerow(['Top Evaluation', 'Start DateTime', top_evaluation.start_datetime])
+        writer.writerow(['Top Evaluation', 'End DateTime', top_evaluation.end_datetime])
+        writer.writerow(['Top Evaluation', 'Total Employees', top_evaluation.total_employees])
+        writer.writerow(['Top Evaluation', 'Processed Count', top_evaluation.processed_count])
+        writer.writerow(['Top Evaluation', 'Status', top_evaluation.status])
+    
+    # Write user onboarding data
+    if user and user.onboarding_data:
+        for key, value in user.onboarding_data.items():
+            writer.writerow(['User Onboarding', key, value])
+    
+    # Prepare the output
+    output.seek(0)
+    
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={
+            'Content-Disposition': f'attachment; filename=user_{user_id}_report.csv'
+        }
+    )
 
 def setup(app):
     app.include_router(router, prefix=prefix)
