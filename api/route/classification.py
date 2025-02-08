@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from starlette.responses import JSONResponse
 
 from api.service import chat_handler
+from api.service.database import Database, CSRRecord
 
 prefix = "/classification"
 router = APIRouter(prefix=prefix)
@@ -56,15 +57,37 @@ async def get_materiality_assessment(description: Input):
         print(f"Error in materiality assessment: {str(e)}")  # Debug log
         raise
 
-@router.get("report-format")
-async def get_report_format():
-    # get list of initiatives
-    # get list of ESG metrics
-    # get governance scores or whatever
-    # make it all into one wall of text, and feed it to LLM
-    # get response for
-    # chat_handler.report_structure_chain
-    pass
+@router.get("/report-format/{user_id}")
+async def get_report_format(user_id: str):
+    # Initialize database
+    db = Database()
+    
+    # Get list of initiatives filtered by user_id
+    initiatives = db.read(CSRRecord, filters={"user_id": user_id})
+    
+    # Prepare data for the report structure chain
+    data = {
+        "initiatives": [
+            {
+                "name": initiative.name,
+                "description": initiative.description,
+                "start_date": initiative.start_date,
+                "end_date": initiative.end_date,
+                "track": initiative.track,
+                "metrics": initiative.metrics
+            }
+            for initiative in initiatives
+        ]
+    }
+    
+    # Feed data to LLM
+    response = chat_handler.report_structure_chain.invoke(input={
+        "data": data
+    })
+    print(response["text"])
+    return {
+        "report_structure": response["text"]
+    }
 
 def setup(app):
     app.include_router(router)
