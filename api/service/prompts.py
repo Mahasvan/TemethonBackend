@@ -22,7 +22,7 @@ IMPORTANT REQUIREMENTS:
    - metrics (at least 2 meaningful metrics)
 
 2. For metrics, each metric MUST be a list of THREE strings: [quantity, unit, description]
-
+3. If the determined track relates to trees / environment - it is mandatory to ask how many trees were planted and return that in the metric. 
 If ANY of the required fields are missing or null, you MUST:
 1. Set "complete" to false
 2. List specific questions in the "questions" field to gather the missing information
