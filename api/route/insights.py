@@ -18,7 +18,6 @@ class EmissionsResponse(BaseModel):
     total_trees: int
     carbon_offset_kg: float
     carbon_offset_metric_tonnes: float
-    csr_records: list
 
 @router.get("/emissions")
 async def get_insights_emissions(user_id: str, db_session: Session = Depends(db.get_db)):
