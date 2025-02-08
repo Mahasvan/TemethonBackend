@@ -24,7 +24,7 @@ async def classify_industry(description: Input):
     response = chat_handler.industry_classification_chain.invoke(input={
         "description": description.description,
     })
-    industry = industries[int(response['text'])]
+    industry = industries[int(response.content)]
     return {
         "industry": industry,
     }
@@ -36,7 +36,7 @@ async def classify_csr_initiative(description: Input):
         "description": description.description,
     })
     return JSONResponse({
-        "response": json.loads(response['text'])
+        "response": json.loads(response.content)
     })
 
 def setup(app):

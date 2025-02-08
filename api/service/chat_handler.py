@@ -17,12 +17,11 @@ llm = ChatOpenAI(
     temperature=0.7,
 )
 
-industry_classification_chain = LLMChain(
-    llm=llm,
-    prompt=INDUSTRY_CLASSIFICATION_PROMPT
-)
+# industry_classification_chain = LLMChain(
+#     llm=llm,
+#     prompt=INDUSTRY_CLASSIFICATION_PROMPT
+# )
 
-initiative_classification_chain = LLMChain(
-    llm=llm,
-    prompt=INITIATIVE_CLASSIFICATION_PROMPT
-)
+industry_classification_chain = INDUSTRY_CLASSIFICATION_PROMPT | llm
+
+initiative_classification_chain = INITIATIVE_CLASSIFICATION_PROMPT | llm
