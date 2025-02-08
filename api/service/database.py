@@ -47,6 +47,9 @@ class EmployeeReview(Base):
     likes = Column(String, nullable=True)
     dislikes = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+    disability_status = Column(Boolean, default=False)
+    religion = Column(String, nullable=True)
+    gender = Column(String, nullable=True)
 
 class EmployeeEvaluation(Base):
     __tablename__ = "employee_evaluations"
