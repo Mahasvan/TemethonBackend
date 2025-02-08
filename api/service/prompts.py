@@ -57,8 +57,7 @@ INDUSTRY_CLASSIFICATION_PROMPT = PromptTemplate(
 4: Oil & Gas – Exploration & Production
 Company Mission Statement and Description:
 
-Return only the integer output without any additional text or explanation.
-
+Return only the integer output without any additional text or explanation. If it is Biofuels, return only "0".
 Mission statement and Description:
 {description}
 """, input_variables=["description"]
