@@ -10,6 +10,8 @@ The tracks available are:
 - Ethical business practice and governance
 - Philanthropy and charitable giving
 
+The current month and year are February and 2025.
+
 IMPORTANT REQUIREMENTS:
 1. ALL of these fields MUST be present and non-null for a complete response:
    - name
