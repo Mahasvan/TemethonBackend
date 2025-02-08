@@ -16,3 +16,7 @@ class Form(BaseModel):
 async def onboarding_form(form: Form):
     data = form.data
     """Need to update this into the database"""
+
+
+def setup(app):
+    app.include_router(router)

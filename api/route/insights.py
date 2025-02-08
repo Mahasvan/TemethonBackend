@@ -19,3 +19,6 @@ async def get_insights_emissions():
     - return that also
     """
     pass
+
+def setup(app):
+    app.include_router(router)
