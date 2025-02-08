@@ -188,3 +188,7 @@ async def get_event_status(event_id: str, db: Session = Depends(get_db)):
             status_code=500,
             detail=f"Error fetching status: {str(e)}"
         )
+
+
+def setup(app):
+    app.include_router(router)
