@@ -8,8 +8,8 @@ from starlette.responses import JSONResponse
 
 from api.service.database import Database, CSRRecord
 
-router = APIRouter()
 prefix = "/insights"
+router = APIRouter(prefix=prefix)
 
 # Initialize database
 db = Database()

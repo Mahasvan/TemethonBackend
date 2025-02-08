@@ -6,8 +6,8 @@ from starlette.responses import JSONResponse
 
 from api.service import chat_handler
 
-router = APIRouter()
 prefix = "/forms"
+router = APIRouter(prefix=prefix)
 
 class Form(BaseModel):
     data: dict

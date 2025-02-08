@@ -6,8 +6,8 @@ from starlette.responses import JSONResponse
 
 from api.service import chat_handler
 
-router = APIRouter()
 prefix = "/classification"
+router = APIRouter(prefix=prefix)
 
 class Input(BaseModel):
     description: str
