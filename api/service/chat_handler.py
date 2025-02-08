@@ -5,7 +5,7 @@ import pprint
 from langchain.chains import LLMChain
 from langchain_groq import ChatGroq
 
-from api.service.prompts import INDUSTRY_CLASSIFICATION_PROMPT, INITIATIVE_CLASSIFICATION_PROMPT
+from api.service.prompts import INDUSTRY_CLASSIFICATION_PROMPT, INITIATIVE_CLASSIFICATION_PROMPT, MATERIALITY_ASSESSMENT_PROMPT
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -25,6 +25,12 @@ initiative_classification_chain = LLMChain(
     llm=llm,
     prompt=INITIATIVE_CLASSIFICATION_PROMPT
 )
+
+materiality_assessment_chain = LLMChain(
+    llm=llm,
+    prompt=MATERIALITY_ASSESSMENT_PROMPT
+)
+
 # industry_classification_chain = INDUSTRY_CLASSIFICATION_PROMPT | llm
 
 # initiative_classification_chain = INITIATIVE_CLASSIFICATION_PROMPT | llm

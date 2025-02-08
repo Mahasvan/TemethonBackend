@@ -62,3 +62,23 @@ Mission statement and Description:
 {description}
 """, input_variables=["description"]
 )
+
+MATERIALITY_ASSESSMENT_PROMPT = PromptTemplate(
+    template="""Given the following company's mission statement, vision statement, and industry, identify the most impactful Environmental, Social, and Governance (ESG) issues relevant to the business. These issues should be ordered by importance and include detailed descriptions.
+
+Company Description:
+{description}
+
+Return a JSON array containing objects with the following structure, ordered by importance:
+[
+    {
+        "name": "Issue Name",
+        "description": "Detailed description of why this issue is material to the company"
+    }
+]
+
+Focus on industry-specific material factors that have significant impact on operations, sustainability, and long-term value creation. Include both opportunities and risks.
+
+Return only the JSON array without any additional text or explanation.""",
+    input_variables=["description"]
+)
