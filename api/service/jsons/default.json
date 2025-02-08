@@ -1,0 +1,19 @@
+{
+  "Emissions Statistics": {
+    "Total Emissions in Fiscal Year": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Metric Tonnes CO₂",
+      "Code": "FB-FR-130a.1"
+    },
+    "Emissions Offset by Green Initiatives in Fiscal Year": {
+        "Category": "Quantitative",
+        "Unit of Measure": "Metric Tonnes CO₂",
+        "Code": "FB-FR-130a.2"
+    },
+    "No. of Green Initiatives Sponsored in Fiscal Year": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Number",
+      "Code": "FB-FR-130a.3"
+    }
+  }
+}
