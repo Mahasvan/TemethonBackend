@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 import os
 from datetime import datetime
 import uuid
+from sqlalchemy.dialects.postgresql import JSONB
 
 DATABASE_URL = "postgresql://postgres:1ji2HYYOkYAmQIEP6s8nvEbTEYHJSe3CaS78BZVnoZOIWo70CZ7t66q6bNMcR6ZZ@5.78.129.71:14028/postgres"
 
@@ -74,7 +75,7 @@ class User(Base):
     mission = Column(String, nullable=True)
     vision = Column(String, nullable=True)
     sector = Column(String, nullable=True)
-    onboarding_data = Column(JSON, nullable=True)
+    onboarding_data = Column(JSONB, nullable=True)
 
 
 class Database:

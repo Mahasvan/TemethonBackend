@@ -1,10 +1,12 @@
 import json
 from typing import Optional
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from starlette.responses import JSONResponse
+from sqlalchemy import func, text
 
 from api.service.database import Database, User
 
@@ -35,6 +37,7 @@ class Form(BaseModel):
     data: dict
     user_id: str
     industry: str
+    timestamp: Optional[str] = None  # Optional timestamp in ISO format
 
 @router.get("/form-structure/{industry}")
 async def get_form_structure(industry: str):
@@ -76,7 +79,7 @@ async def get_form_structure(industry: str):
 
 @router.post("/onboarding-form")
 async def onboarding_form(form: Form, db_session: Session = Depends(db.get_db)):
-    """Save onboarding form data to user's profile"""
+    """Save onboarding form data to user's profile as a new entry in the array"""
     try:
         # Get industry-specific form structure
         file_map = {
@@ -126,13 +129,36 @@ async def onboarding_form(form: Form, db_session: Session = Depends(db.get_db)):
                     "code": field_spec["Code"]
                 }
 
-        # Update user's onboarding data
-        user.onboarding_data = processed_data
+        # Create new entry with timestamp
+        new_entry = {
+            "timestamp": form.timestamp or datetime.utcnow().isoformat(),
+            "industry": form.industry,
+            "data": processed_data
+        }
+
+        # Simple array append using jsonb_build_array and concatenation
+        sql = text("""
+            UPDATE "User" 
+            SET onboarding_data = 
+                CASE 
+                    WHEN onboarding_data IS NULL THEN ARRAY[(:entry)::json]
+                    ELSE onboarding_data || ARRAY[(:entry)::json]
+                END
+            WHERE id = :user_id
+        """)
+        
+        db_session.execute(
+            sql, 
+            {
+                'entry': json.dumps(new_entry),
+                'user_id': form.user_id
+            }
+        )
         db_session.commit()
 
         return JSONResponse({
             "status": "success",
-            "message": "Onboarding data saved successfully"
+            "message": "Onboarding data entry added successfully"
         })
 
     except Exception as e:
