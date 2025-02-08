@@ -1,5 +1,4 @@
 {
-  "Biotechnology & Pharmaceuticals Metrics": {
     "Safety of Clinical Trial Participants": {
       "Number of inspections related to clinical trial management": {
         "Category": "Quantitative",
@@ -70,5 +69,4 @@
         "Code": "HC-BP-330a.2"
       }
     }
-  }
 }
