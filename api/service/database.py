@@ -74,6 +74,7 @@ class User(Base):
     mission = Column(String, nullable=True)
     vision = Column(String, nullable=True)
     sector = Column(String, nullable=True)
+    onboarding_data = Column(JSON, nullable=True)
 
 
 class Database:
