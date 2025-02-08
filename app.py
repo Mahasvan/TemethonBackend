@@ -5,6 +5,8 @@ from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+
 from api.service import shell
 
 app = FastAPI()
@@ -19,7 +21,7 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    response = RedirectResponse(url='/docs')
+    response = JSONResponse({"message": "hello world"})
     return response
 
 
@@ -40,5 +42,4 @@ for route in routes:
 
 if __name__ == "__main__":
     import uvicorn
-
     uvicorn.run(app, host="0.0.0.0", port=5001)
