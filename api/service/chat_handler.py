@@ -5,7 +5,7 @@ import pprint
 from langchain.chains import LLMChain
 from langchain_community.chat_models import ChatOpenAI
 
-from api.service.prompts import INDUSTRY_CLASSIFICATION_PROMPT
+from api.service.prompts import INDUSTRY_CLASSIFICATION_PROMPT, INITIATIVE_CLASSIFICATION_PROMPT
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -20,4 +20,9 @@ llm = ChatOpenAI(
 industry_classification_chain = LLMChain(
     llm=llm,
     prompt=INDUSTRY_CLASSIFICATION_PROMPT
+)
+
+initiative_classification_chain = LLMChain(
+    llm=llm,
+    prompt=INITIATIVE_CLASSIFICATION_PROMPT
 )

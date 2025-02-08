@@ -1,4 +1,7 @@
+import json
+
 from fastapi import APIRouter
+from starlette.responses import JSONResponse
 
 from api.service import chat_handler
 
@@ -11,8 +14,8 @@ industries = ["Biofuels",
               "Food Retailers & Distributors",
               "Oil & Gas – Exploration & Production"]
 
-@router.get("/classify")
-async def classify(description):
+@router.get("/industry")
+async def classify_industry(description):
     """Identify a company's industry based on its mission statement and description."""
     response = chat_handler.industry_classification_chain.invoke(input={
         "description": description,
@@ -21,6 +24,16 @@ async def classify(description):
     return {
         "industry": industry,
     }
+
+@router.get("/initiative")
+async def classify_csr_initiative(description):
+    """extracts information from a CSR Initiative's writeup"""
+    response = chat_handler.initiative_classification_chain.invoke(input={
+        "description": description,
+    })
+    return JSONResponse({
+        "response": json.loads(response['text'])
+    })
 
 def setup(app):
     app.include_router(router)

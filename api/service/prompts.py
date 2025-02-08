@@ -16,11 +16,10 @@ IMPORTANT REQUIREMENTS:
    - description
    - start_date (YYYY-MM-DD format)
    - end_date (YYYY-MM-DD format)
-   - attendees (number)
    - track (must be one from the list above)
    - metrics (at least 2 meaningful metrics)
 
-2. For metrics, each metric MUST be a list of TWO strings: [quantity, description]
+2. For metrics, each metric MUST be a list of THREE strings: [quantity, unit, description]
 
 If ANY of the required fields are missing or null, you MUST:
 1. Set "complete" to false
@@ -35,9 +34,8 @@ Return a JSON object with the following structure:
     "description": "brief description",
     "start_date": "YYYY-MM-DD",
     "end_date": "YYYY-MM-DD",
-    "attendees": number,
     "track": "track name",
-    "metrics": [["quantity1", "description1"], ["quantity2", "description2"]],
+    "metrics": [["quantity1", "unit1", "description1"], ["quantity2", "unit2", "description2"]],
     "complete": boolean,
     "questions": ["question1", "question2"] or null if complete
 }}
@@ -56,8 +54,6 @@ INDUSTRY_CLASSIFICATION_PROMPT = PromptTemplate(
 3: Food Retailers & Distributors
 4: Oil & Gas – Exploration & Production
 Company Mission Statement and Description:
-
-[Insert mission statement and description here]
 
 Return only the integer output without any additional text or explanation.
 
