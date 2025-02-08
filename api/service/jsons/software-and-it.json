@@ -20,7 +20,22 @@
       "Unit of Measure": "Metric Tonnes CO₂",
       "Code": "EM-EP-110a.1"
     },
-    "Gross global Scope 3 emissions": {
+    "Gross global Scope 3 emissions - Business travel": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Metric Tonnes CO₂",
+      "Code": "EM-EP-110a.1"
+    },
+    "Gross global Scope 3 emissions - Employee commute": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Metric Tonnes CO₂",
+      "Code": "EM-EP-110a.1"
+    },
+    "Gross global Scope 3 emissions - Transmission and distribution losses": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Metric Tonnes CO₂",
+      "Code": "EM-EP-110a.1"
+    },
+    "Gross global Scope 3 emissions - Waste emissions": {
       "Category": "Quantitative",
       "Unit of Measure": "Metric Tonnes CO₂",
       "Code": "EM-EP-110a.1"
