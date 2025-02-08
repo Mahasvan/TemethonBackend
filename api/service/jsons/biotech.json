@@ -16,18 +16,6 @@
       "Code": "HC-BP-210a.1"
     }
   },
-  "Affordability & Pricing": {
-    "Percentage change in weighted average list price": {
-      "Category": "Quantitative",
-      "Unit of Measure": "Percentage (%)",
-      "Code": "HC-BP-240b.2"
-    },
-    "Percentage change in weighted average net price": {
-      "Category": "Quantitative",
-      "Unit of Measure": "Percentage (%)",
-      "Code": "HC-BP-240b.2"
-    }
-  },
   "Drug Safety": {
     "Number of fatalities associated with products": {
       "Category": "Quantitative",
@@ -43,9 +31,7 @@
       "Category": "Quantitative",
       "Unit of Measure": "Number",
       "Code": "HC-BP-250a.3"
-    }
-  },
-  "Counterfeit Drugs": {
+    },
     "Number of actions that led to raids, seizure, arrests, or filing of criminal charges": {
       "Category": "Quantitative",
       "Unit of Measure": "Number",
@@ -55,18 +41,6 @@
       "Category": "Discussion and Analysis",
       "Unit of Measure": "n/a",
       "Code": "HC-BP-260a.1"
-    }
-  },
-  "Employee Recruitment, Development & Retention": {
-    "Voluntary turnover rate for executive managers": {
-      "Category": "Quantitative",
-      "Unit of Measure": "Percentage (%)",
-      "Code": "HC-BP-330a.2"
-    },
-    "Involuntary turnover rate for executive managers": {
-      "Category": "Quantitative",
-      "Unit of Measure": "Percentage (%)",
-      "Code": "HC-BP-330a.2"
     }
   }
 }
