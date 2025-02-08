@@ -1,0 +1,74 @@
+{
+  "Greenhouse Gas Emissions": {
+    "Gross global Scope 1 emissions - Methane Percentage": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Metric Tonnes CO₂",
+      "Code": "EM-EP-110a.1"
+    },
+    "Gross global Scope 1 emissions - Flared Hydrocarbons": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Metric Tonnes CO₂",
+      "Code": "EM-EP-110a.2"
+    },
+    "Discussion of long- and short-term strategy or plan to manage Scope 1 emissions": {
+      "Category": "Discussion and Analysis",
+      "Unit of Measure": "n/a",
+      "Code": "EM-EP-110a.3"
+    }
+  },
+  "Air Quality": {
+    "Air emissions of NOx (excluding N₂O)": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Metric Tonnes (t)",
+      "Code": "EM-EP-120a.1"
+    },
+    "Air emissions of SOx": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Metric Tonnes (t)",
+      "Code": "EM-EP-120a.1"
+    }
+  },
+  "Water Management": {
+    "Total water withdrawn in regions with High or Extremely High Baseline Water Stress": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Thousand cubic metres (m³)",
+      "Code": "EM-EP-140a.1"
+    },
+    "Total water consumed in regions with High or Extremely High Baseline Water Stress": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Thousand cubic metres (m³)",
+      "Code": "EM-EP-140a.1"
+    }
+  },
+  "Biodiversity Impacts": {
+    "Number of hydrocarbon spills": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Number",
+      "Code": "EM-EP-160a.2"
+    },
+    "Aggregate volume of hydrocarbon spills": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Barrels (bbls)",
+      "Code": "EM-EP-160a.2"
+    }
+  },
+  "Security, Human Rights & Rights of Indigenous Peoples": {
+    "Percentage of proved reserves in or near areas of conflict": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Percentage (%)",
+      "Code": "EM-EP-210a.1"
+    },
+    "Percentage of probable reserves in or near indigenous land": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Percentage (%)",
+      "Code": "EM-EP-210a.2"
+    }
+  },
+  "Community Relations": {
+    "Discussion of process to manage risks and opportunities associated with community rights and interests": {
+      "Category": "Discussion and Analysis",
+      "Unit of Measure": "n/a",
+      "Code": "EM-EP-210b.1"
+    }
+  }
+}

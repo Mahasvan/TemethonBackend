@@ -1,0 +1,76 @@
+{
+  "Fleet Fuel Management": {
+    "Fleet fuel consumed": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Gigajoules (GJ)",
+      "Code": "FB-FR-110a.1"
+    },
+    "Percentage of fleet fuel from renewable sources": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Percentage (%)",
+      "Code": "FB-FR-110a.1"
+    }
+  },
+  "Air Emissions from Refrigeration": {
+    "Gross global Scope 1 emissions from refrigerants": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Metric tonnes (t) CO₂-e",
+      "Code": "FB-FR-110b.1"
+    },
+    "Percentage of refrigerants consumed with zero ozone-depleting potential": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Percentage (%) by weight",
+      "Code": "FB-FR-110b.2"
+    }
+  },
+  "Energy Management": {
+    "Operational energy consumed": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Gigajoules (GJ)",
+      "Code": "FB-FR-130a.1"
+    },
+    "Percentage of operational energy from grid electricity": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Percentage (%)",
+      "Code": "FB-FR-130a.1"
+    }
+  },
+  "Food Waste Management": {
+    "Amount of food waste generated": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Metric tonnes (t)",
+      "Code": "FB-FR-150a.1"
+    },
+    "Percentage of food waste diverted from the waste stream": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Percentage (%)",
+      "Code": "FB-FR-150a.1"
+    }
+  },
+  "Food Safety": {
+    "High-risk food safety violation rate": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Rate",
+      "Code": "FB-FR-250a.1"
+    },
+    "Number of recalls issued": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Number",
+      "Code": "FB-FR-250a.2"
+    }
+  },
+  "Data Security": {
+    "Description of approach to identifying and addressing data security risks": {
+      "Category": "Discussion and Analysis",
+      "Unit of Measure": "n/a",
+      "Code": "FB-FR-230a.2"
+    }
+  },
+  "Management of Environmental & Social Impacts in the Supply Chain": {
+    "Discussion of strategy to manage environmental and social risks within the supply chain, including animal welfare": {
+      "Category": "Discussion and Analysis",
+      "Unit of Measure": "n/a",
+      "Code": "FB-FR-430a.3"
+    }
+  }
+}
