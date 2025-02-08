@@ -56,5 +56,15 @@ async def get_materiality_assessment(description: Input):
         print(f"Error in materiality assessment: {str(e)}")  # Debug log
         raise
 
+@router.get("report-format")
+async def get_report_format():
+    # get list of initiatives
+    # get list of ESG metrics
+    # get governance scores or whatever
+    # make it all into one wall of text, and feed it to LLM
+    # get response for
+    # chat_handler.report_structure_chain
+    pass
+
 def setup(app):
     app.include_router(router)

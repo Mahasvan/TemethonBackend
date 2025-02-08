@@ -77,3 +77,32 @@ Focus on the most important resources for the given company - for example an IT 
 Return only the JSON array without any additional text or explanation.""",
     input_variables=["description"]
 )
+
+REPORT_TEMPLATE_PROMPT = PromptTemplate(
+    template="""You are a bot that is designed to generate a format for a very detailed report for an organization, for its ESG and CSR reports.
+    You will be given a list of sustainability initiatives that the company has undertaken. 
+    You will also be given data about various metrics of the ESG parameters. 
+    Your job is to make a structure for the document, in the following format:
+    
+    For each ESG Metric or CSR Initiative, give the following structure enclosed within angle braces <>:
+    < 
+    This is a report on CSR Initiative X, which has the following fields:
+    - start date: XXXX-MM-DD etc,
+    - end date: XXXX-MM-DD etc,
+    and whatever other details is given for each initiative, or metric.
+     >
+     
+     You also need to provide visualizations in between, detailing the kind of data you want visualised.
+     <
+     Visualization - Gantt chart showing the CSR initiatives over time 
+     >
+     < 
+     Visualization showing the trend of ESG Metrics, compared with the goals set
+     >
+     etc.
+     
+     Here is the data.
+     {data}
+    """,
+    input_variables=["data"]
+)
