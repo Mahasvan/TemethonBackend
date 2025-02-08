@@ -10,13 +10,28 @@
       "Unit of Measure": "Percentage (%)",
       "Code": "TC-SI-130a.1"
     },
+    "Gross global Scope 1 emissions": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Metric Tonnes CO₂",
+      "Code": "EM-EP-110a.1"
+    },
+    "Gross global Scope 2 emissions": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Metric Tonnes CO₂",
+      "Code": "EM-EP-110a.1"
+    },
+    "Gross global Scope 3 emissions": {
+      "Category": "Quantitative",
+      "Unit of Measure": "Metric Tonnes CO₂",
+      "Code": "EM-EP-110a.1"
+    },
     "Discussion of the integration of environmental considerations into strategic planning for data centre needs": {
       "Category": "Discussion and Analysis",
       "Unit of Measure": "n/a",
       "Code": "TC-SI-130a.3"
     }
   },
-  "Data Privacy & Freedom of Expression": {
+  "Data Privacy & Data Security": {
     "Number of users whose information is used for secondary purposes": {
       "Category": "Quantitative",
       "Unit of Measure": "Number",
@@ -26,9 +41,7 @@
       "Category": "Quantitative",
       "Unit of Measure": "Presentation currency",
       "Code": "TC-SI-220a.3"
-    }
-  },
-  "Data Security": {
+    },
     "Number of data breaches": {
       "Category": "Quantitative",
       "Unit of Measure": "Number",
@@ -40,19 +53,7 @@
       "Code": "TC-SI-230a.1"
     }
   },
-  "Recruiting & Managing a Global, Diverse & Skilled Workforce": {
-    "Percentage of employees requiring work visas": {
-      "Category": "Quantitative",
-      "Unit of Measure": "Percentage (%)",
-      "Code": "TC-SI-330a.1"
-    },
-    "Employee engagement as a percentage": {
-      "Category": "Quantitative",
-      "Unit of Measure": "Percentage (%)",
-      "Code": "TC-SI-330a.2"
-    }
-  },
-  "Managing Systemic Risks from Technology Disruptions": {
+  "Technology Disruptions": {
     "Number of service disruptions": {
       "Category": "Quantitative",
       "Unit of Measure": "Number",
