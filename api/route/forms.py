@@ -1,4 +1,5 @@
 import json
+import pprint
 from typing import Optional
 from datetime import datetime
 
@@ -165,5 +166,22 @@ async def onboarding_form(form: Form, db_session: Session = Depends(db.get_db)):
         db_session.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.get("/users/onboarding-data")
+async def get_onboarding_data(user_id, db_session: Session = Depends(db.get_db)):
+    user = db_session.query(User).filter(User.id == user_id).first()
+    data = user.onboarding_data
+    # pprint.pprint(data)
+    # with open("data.json", "w") as f:
+    #     json.dump(data, f, indent=4)
+    res = {}
+    for row in data:
+        for category, questions in row["data"].items():
+            print(questions)
+            for question, values in questions.items():
+                if not res.get(question): res[question] = []
+                res[question].append(values["value"])
+    return JSONResponse({
+        "data": res,
+    })
 def setup(app):
     app.include_router(router)
