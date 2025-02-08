@@ -5,8 +5,9 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from starlette.responses import JSONResponse
+from sqlalchemy import func
 
-from api.service.database import Database, CSRRecord
+from api.service.database import Database, CSRRecord, EmployeeReview
 
 prefix = "/insights"
 router = APIRouter(prefix=prefix)
@@ -18,6 +19,11 @@ class EmissionsResponse(BaseModel):
     total_trees: int
     carbon_offset_kg: float
     carbon_offset_metric_tonnes: float
+
+class DiversityMetricsResponse(BaseModel):
+    gender_distribution: dict
+    religion_distribution: dict
+    disability_percentage: float
 
 @router.get("/emissions")
 async def get_insights_emissions(user_id: str, db_session: Session = Depends(db.get_db)):
@@ -78,6 +84,65 @@ async def get_insights_emissions(user_id: str, db_session: Session = Depends(db.
         total_trees=total_trees,
         carbon_offset_kg=carbon_offset_kg,
         carbon_offset_metric_tonnes=carbon_offset_metric_tonnes,
+    )
+
+    return JSONResponse({
+        "status": "success",
+        "data": response.dict()
+    })
+
+@router.get("/diversity-metrics")
+async def get_diversity_metrics(db_session: Session = Depends(db.get_db)):
+    """
+    Calculate diversity metrics from employee reviews.
+    
+    Returns:
+        JSON response with distribution of gender, religion and disability status
+    """
+    # Get total count
+    total_count = db_session.query(func.count(EmployeeReview.id)).scalar()
+    
+    if total_count == 0:
+        return JSONResponse({
+            "status": "success",
+            "data": {
+                "gender_distribution": {},
+                "religion_distribution": {},
+                "disability_percentage": 0.0
+            }
+        })
+
+    # Get gender distribution
+    gender_counts = db_session.query(
+        EmployeeReview.gender,
+        func.count(EmployeeReview.id)
+    ).group_by(EmployeeReview.gender).all()
+    
+    gender_distribution = {
+        gender if gender else "Not Specified": (count/total_count) * 100
+        for gender, count in gender_counts
+    }
+
+    # Get religion distribution
+    religion_counts = db_session.query(
+        EmployeeReview.religion,
+        func.count(EmployeeReview.id)
+    ).group_by(EmployeeReview.religion).all()
+    
+    religion_distribution = {
+        religion if religion else "Not Specified": (count/total_count) * 100
+        for religion, count in religion_counts
+    }
+
+    # Get disability percentage
+    disability_count = db_session.query(func.count(EmployeeReview.id))\
+        .filter(EmployeeReview.disability_status == True).scalar()
+    disability_percentage = (disability_count/total_count) * 100
+
+    response = DiversityMetricsResponse(
+        gender_distribution=gender_distribution,
+        religion_distribution=religion_distribution,
+        disability_percentage=disability_percentage
     )
 
     return JSONResponse({
