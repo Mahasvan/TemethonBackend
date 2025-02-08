@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import os
 
 from fastapi import FastAPI
@@ -27,9 +28,15 @@ def read_root():
 
 # load API Routers
 routes = [x.rstrip(".py") for x in os.listdir("api/route") if x.endswith(".py") and not x.startswith("_")]
+with open("api/route/blacklist.json") as f:
+
+    blacklist = json.load(f)
 
 for route in routes:
     shell.print_cyan_message(f"Loading {route}...")
+    if route in blacklist:
+        shell.print_yellow_message("Blacklisted. Skipping...")
+        continue
     try:
         importlib.util.spec_from_file_location(route, f"api/route/{route}.py")
         module = importlib.import_module(f"api.route.{route}")
