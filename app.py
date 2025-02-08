@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 
 from api.service import shell
 
-app = FastAPI()
+app = FastAPI(title="GreenLit")
 
 app.add_middleware(
     CORSMiddleware,
