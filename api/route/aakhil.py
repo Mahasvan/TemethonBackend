@@ -98,7 +98,7 @@ Previous questions and answers:
 
         try:
             print("\nParsing LLM response...")
-            response_text = response.content.strip()
+            response_text = response["text"].strip()
             if '```' in response_text:
                 response_text = response_text.split('```')[1]
                 if response_text.startswith('json'):
@@ -120,6 +120,10 @@ Previous questions and answers:
                     'track': None,
                     'metrics': [],
                 })
+            else:
+                # Ensure attendees field is present even for complete responses
+                if 'attendees' not in result_dict:
+                    result_dict['attendees'] = None
 
             print(f"\nParsed result with defaults: {result_dict}")
 
