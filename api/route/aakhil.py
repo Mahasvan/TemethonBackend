@@ -4,7 +4,7 @@ from fastapi import Depends
 import uuid, json
 
 from api.service import database
-from api.service.models import CSREvent, CSRRequest
+from api.service.models import CSREvent
 from api.service.database import CSRRecord, User, Database
 from api.service.chat_handler import initiative_classification_chain as classification_chain
 
@@ -12,11 +12,20 @@ from fastapi.exceptions import HTTPException
 
 from sqlalchemy.orm import Session
 
+from pydantic import BaseModel
+from typing import Optional, List
+
 db = Database()
 get_db = db.get_db
 
 prefix = "/aakhil"
 router = APIRouter(prefix=prefix)
+
+class CSRRequest(BaseModel):
+    description: Optional[str] = None
+    event_id: Optional[str] = None
+    followup_answers: Optional[List[str]] = None
+    user_id: Optional[str] = None
 
 
 @router.post("/classify", response_model=CSREvent)
