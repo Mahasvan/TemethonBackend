@@ -245,13 +245,13 @@ async def analyze_esg_from_pdf(input_data: PDFUrlInput):
 @router.post("/percentile")
 async def calculate_percentile(input_data: ScoreInput):
     """
-    Calculate the percentile of a given ESG score based on the population statistics.
+    Calculate the percentile and Gaussian distribution parameters for a given ESG score.
     
     Args:
         input_data: ScoreInput containing score and mode (env, soc, gov, or total)
     
     Returns:
-        JSON response with the calculated percentile
+        JSON response with percentile and Gaussian parameters
     """
     # Population statistics
     models = {
@@ -285,12 +285,18 @@ async def calculate_percentile(input_data: ScoreInput):
     
     model = models[input_data.mode]
     
-    # Calculate standard deviation using the empirical rule (68-95-99.7)
-    # Assuming the range (max - min) represents 95% of the data (±2 standard deviations)
+    # Calculate standard deviation using the empirical rule
     std_dev = (model["max"] - model["min"]) / 4
     
     # Calculate percentile using normal distribution
     percentile = stats.norm.cdf(input_data.score, loc=model["mean"], scale=std_dev) * 100
+    
+    # Calculate Gaussian parameters
+    gaussian_params = {
+        "mean": model["mean"],
+        "std_dev": std_dev,
+        "variance": std_dev ** 2
+    }
     
     return JSONResponse({
         "status": "success",
@@ -298,7 +304,8 @@ async def calculate_percentile(input_data: ScoreInput):
             "score": input_data.score,
             "mode": input_data.mode,
             "percentile": round(percentile, 2),
-            "population_stats": model
+            "population_stats": model,
+            "gaussian_parameters": gaussian_params
         }
     })
 
