@@ -16,6 +16,9 @@ from langchain_core.documents import Document
 import logging
 from scipy import stats
 from fastapi.responses import JSONResponse
+import yfinance as yf
+import pandas as pd
+from datetime import datetime, timedelta
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -34,6 +37,12 @@ class PDFUrlInput(BaseModel):
 class ScoreInput(BaseModel):
     score: float
     mode: str
+
+class StockDataInput(BaseModel):
+    symbol: str
+
+class VolatilityInput(BaseModel):
+    symbol: str
 
 def download_and_extract_pdf_text(pdf_url: str) -> str:
     try:
@@ -116,14 +125,17 @@ def analyze_esg_chunk(chunk: Document, llm: ChatOpenAI, chunk_index: int) -> dic
     Extract and categorize all ESG-related information found in this section. Return ONLY the JSON object with the findings."""
 
     prompt = ChatPromptTemplate.from_template(template)
-    chain = prompt | llm | parser
-
+    
+    # Replace the pipe operator chain with explicit chain creation
+    messages = prompt.format_messages(
+        text=chunk.page_content,
+        format_instructions=format_instructions
+    )
+    
     try:
         logger.info(f"Sending chunk {chunk_index + 1} to LLM for analysis")
-        result = chain.invoke({
-            "text": chunk.page_content,
-            "format_instructions": format_instructions
-        })
+        response = llm.invoke(messages)
+        result = parser.parse(response.content)
         logger.info(f"Successfully processed chunk {chunk_index + 1}")
         return result["esg_elements"]
     except Exception as e:
@@ -309,6 +321,256 @@ async def calculate_percentile(input_data: ScoreInput):
         }
     })
 
+@router.post("/nasdaq-historical")
+async def get_nasdaq_historical(input_data: StockDataInput):
+    """
+    Download historical stock data from NASDAQ using Yahoo Finance.
+    Default period is last 30 days up to today.
+    
+    Args:
+        input_data: StockDataInput containing symbol
+        
+    Returns:
+        JSON response with historical stock data
+    """
+    try:
+        # Always get data for last 30 days
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=30)
+        
+        # Download data using yfinance
+        ticker = yf.Ticker(input_data.symbol)
+        df = ticker.history(period="30d")  # Use period parameter instead of start/end dates
+        
+        # Process the data
+        df = df.reset_index()
+        df['Date'] = pd.to_datetime(df['Date']).dt.strftime('%Y-%m-%d')
+        
+        # Convert to dictionary format
+        historical_data = df.to_dict('records')
+        
+        # Get company info
+        info = ticker.info
+        company_info = {
+            "name": info.get("longName"),
+            "sector": info.get("sector"),
+            "industry": info.get("industry"),
+            "website": info.get("website"),
+            "market_cap": info.get("marketCap"),
+            "currency": info.get("currency")
+        }
+        
+        return JSONResponse({
+            "status": "success",
+            "data": {
+                "symbol": input_data.symbol,
+                "company_info": company_info,
+                "historical_data": historical_data,
+                "period": {
+                    "start": start_date.strftime("%Y-%m-%d"),
+                    "end": end_date.strftime("%Y-%m-%d")
+                }
+            }
+        })
+        
+    except Exception as e:
+        logger.error(f"Error fetching NASDAQ data: {str(e)}")
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Error fetching historical data: {str(e)}"
+        )
+
+@router.post("/volatility")
+async def analyze_volatility(input_data: VolatilityInput):
+    """
+    Analyze stock price volatility by comparing prices against a trend line.
+    Also analyzes how variance changes over time to indicate customer satisfaction trends.
+    Uses 30 days of historical data.
+    """
+    try:
+        # Get historical data
+        ticker = yf.Ticker(input_data.symbol)
+        df = ticker.history(period="30d")
+        
+        if df.empty:
+            raise HTTPException(
+                status_code=404,
+                detail="No data available for this symbol"
+            )
+            
+        if len(df) < 5:  # Need at least 5 days of data for meaningful analysis
+            raise HTTPException(
+                status_code=400,
+                detail="Insufficient data for analysis. Need at least 5 days of trading data."
+            )
+        
+        # Reset index and ensure we have dates as column
+        df = df.reset_index()
+        df['Date'] = pd.to_datetime(df['Date'])
+        df['Day'] = (df['Date'] - df['Date'].min()).dt.days
+        
+        # Calculate price trend line
+        price_regression = stats.linregress(df['Day'], df['Close'])
+        df['Price_Trend'] = price_regression.slope * df['Day'] + price_regression.intercept
+        
+        # Calculate variance metrics with safety checks
+        df['Variance'] = df['Close'] - df['Price_Trend']
+        df['Variance_Pct'] = df['Variance'] / df['Price_Trend'].replace(0, float('nan')) * 100
+        df['Variance_Pct'] = df['Variance_Pct'].fillna(0)  # Replace NaN with 0
+        
+        # Calculate rolling variance (5-day window) to smooth out daily fluctuations
+        df['Rolling_Variance'] = df['Variance_Pct'].rolling(window=5, min_periods=1).std()
+        df['Rolling_Variance'] = df['Rolling_Variance'].fillna(0)  # Replace NaN with 0
+        
+        # Analyze trend in variance itself
+        variance_regression = stats.linregress(df['Day'], df['Rolling_Variance'])
+        df['Variance_Trend'] = variance_regression.slope * df['Day'] + variance_regression.intercept
+        
+        def safe_float(value):
+            """Convert value to float, replacing inf/nan with 0"""
+            try:
+                if pd.isna(value) or pd.isinf(value):
+                    return 0.0
+                return float(value)
+            except:
+                return 0.0
+        
+        # Calculate volatility metrics with safety checks
+        volatility_metrics = {
+            "current_metrics": {
+                "mean_variance": safe_float(df['Variance'].mean()),
+                "std_variance": safe_float(df['Variance'].std()),
+                "max_variance": safe_float(df['Variance'].max()),
+                "min_variance": safe_float(df['Variance'].min()),
+                "mean_variance_pct": safe_float(df['Variance_Pct'].mean()),
+                "std_variance_pct": safe_float(df['Variance_Pct'].std()),
+            },
+            "trend_analysis": {
+                "price_trend": {
+                    "slope": safe_float(price_regression.slope),
+                    "r_squared": safe_float(price_regression.rvalue ** 2),
+                },
+                "variance_trend": {
+                    "slope": safe_float(variance_regression.slope),
+                    "r_squared": safe_float(variance_regression.rvalue ** 2),
+                    "direction": "increasing" if variance_regression.slope > 0 else "decreasing",
+                    "significance": get_trend_significance(variance_regression.pvalue)
+                }
+            },
+            "customer_satisfaction_indicator": get_satisfaction_indicator(
+                safe_float(variance_regression.slope),
+                safe_float(df['Rolling_Variance'].mean())
+            )
+        }
+        
+        # Prepare daily data for response, ensuring all values are JSON-serializable
+        df['Date'] = df['Date'].dt.strftime('%Y-%m-%d')
+        daily_data = []
+        for record in df[[
+            'Date', 'Close', 'Price_Trend', 'Variance_Pct', 
+            'Rolling_Variance', 'Variance_Trend'
+        ]].to_dict('records'):
+            safe_record = {k: safe_float(v) if k != 'Date' else v for k, v in record.items()}
+            daily_data.append(safe_record)
+        
+        return JSONResponse({
+            "status": "success",
+            "data": {
+                "symbol": input_data.symbol,
+                "volatility_metrics": volatility_metrics,
+                "daily_data": daily_data,
+                "summary": {
+                    "current_volatility": get_volatility_rating(
+                        safe_float(volatility_metrics['current_metrics']['std_variance_pct'])
+                    ),
+                    "volatility_trend": get_volatility_trend_description(
+                        safe_float(variance_regression.slope),
+                        variance_regression.pvalue
+                    ),
+                    "customer_satisfaction_trend": get_satisfaction_trend(
+                        safe_float(variance_regression.slope),
+                        variance_regression.pvalue
+                    )
+                }
+            }
+        })
+        
+    except Exception as e:
+        logger.error(f"Error analyzing volatility: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error analyzing volatility: {str(e)}"
+        )
+
+def get_trend_significance(p_value: float) -> str:
+    """
+    Determine the statistical significance of a trend.
+    """
+    if p_value < 0.01:
+        return "Very Strong"
+    elif p_value < 0.05:
+        return "Strong"
+    elif p_value < 0.1:
+        return "Moderate"
+    else:
+        return "Weak"
+
+def get_satisfaction_indicator(variance_slope: float, mean_variance: float) -> str:
+    """
+    Interpret variance trends in terms of customer satisfaction.
+    """
+    if variance_slope < -0.01:
+        return "Improving - Volatility is decreasing, suggesting increasing customer satisfaction"
+    elif variance_slope > 0.01:
+        return "Declining - Increasing volatility suggests potential customer satisfaction issues"
+    else:
+        if mean_variance < 2.0:
+            return "Stable - Low volatility indicates consistent customer satisfaction"
+        else:
+            return "Unstable - High but steady volatility suggests ongoing satisfaction challenges"
+
+def get_volatility_trend_description(slope: float, p_value: float) -> str:
+    """
+    Provide a description of how volatility is changing over time.
+    """
+    significance = get_trend_significance(p_value)
+    if abs(slope) < 0.001:
+        return f"Volatility is stable ({significance} confidence)"
+    
+    direction = "increasing" if slope > 0 else "decreasing"
+    magnitude = "rapidly" if abs(slope) > 0.05 else "gradually"
+    
+    return f"Volatility is {magnitude} {direction} ({significance} confidence)"
+
+def get_satisfaction_trend(slope: float, p_value: float) -> str:
+    """
+    Interpret volatility trends in terms of customer satisfaction changes.
+    """
+    if p_value >= 0.1:
+        return "No clear trend in customer satisfaction"
+    
+    if slope > 0.01:
+        return "Customer satisfaction appears to be declining"
+    elif slope < -0.01:
+        return "Customer satisfaction shows signs of improvement"
+    else:
+        return "Customer satisfaction remains stable"
+
+def get_volatility_rating(std_variance_pct: float) -> str:
+    """
+    Convert standard deviation of variance percentage into a rating.
+    """
+    if std_variance_pct < 1.0:
+        return "Very Low"
+    elif std_variance_pct < 2.0:
+        return "Low"
+    elif std_variance_pct < 3.0:
+        return "Moderate"
+    elif std_variance_pct < 4.0:
+        return "High"
+    else:
+        return "Very High"
+
 def setup(app):
     """Setup function to register the router with the FastAPI app"""
     try:
@@ -317,4 +579,4 @@ def setup(app):
         return True
     except Exception as e:
         logger.error(f"Failed to setup ESG router: {str(e)}")
-        return False 
+        return False
