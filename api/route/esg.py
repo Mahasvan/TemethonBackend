@@ -14,6 +14,8 @@ from typing import List, Dict
 import json
 from langchain_core.documents import Document
 import logging
+from scipy import stats
+from fastapi.responses import JSONResponse
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -28,6 +30,10 @@ router = APIRouter(
 
 class PDFUrlInput(BaseModel):
     pdf_url: str
+
+class ScoreInput(BaseModel):
+    score: float
+    mode: str
 
 def download_and_extract_pdf_text(pdf_url: str) -> str:
     try:
@@ -235,6 +241,66 @@ async def analyze_esg_from_pdf(input_data: PDFUrlInput):
     except Exception as e:
         logger.error(f"Error calculating final scores: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error calculating ESG scores: {str(e)}")
+
+@router.post("/percentile")
+async def calculate_percentile(input_data: ScoreInput):
+    """
+    Calculate the percentile of a given ESG score based on the population statistics.
+    
+    Args:
+        input_data: ScoreInput containing score and mode (env, soc, gov, or total)
+    
+    Returns:
+        JSON response with the calculated percentile
+    """
+    # Population statistics
+    models = {
+        "env": {
+            "mean": 48,
+            "max": 80,
+            "min": 7,
+        },
+        "soc": {
+            "mean": 57,
+            "max": 78,
+            "min": 35,
+        },
+        "gov": {
+            "mean": 75,
+            "max": 84,
+            "min": 43,
+        },
+        "total": {
+            "mean": 64,
+            "max": 80,
+            "min": 40,
+        }
+    }
+    
+    if input_data.mode not in models:
+        raise HTTPException(status_code=400, detail="Invalid mode. Must be one of: env, soc, gov, total")
+    
+    if not 1 <= input_data.score <= 100:
+        raise HTTPException(status_code=400, detail="Score must be between 1 and 100")
+    
+    model = models[input_data.mode]
+    
+    # Calculate standard deviation using the empirical rule (68-95-99.7)
+    # Assuming the range (max - min) represents 95% of the data (±2 standard deviations)
+    std_dev = (model["max"] - model["min"]) / 4
+    
+    # Calculate percentile using normal distribution
+    percentile = stats.norm.cdf(input_data.score, loc=model["mean"], scale=std_dev) * 100
+    
+    return JSONResponse({
+        "status": "success",
+        "data": {
+            "score": input_data.score,
+            "mode": input_data.mode,
+            "percentile": round(percentile, 2),
+            "population_stats": model
+        }
+    })
 
 def setup(app):
     """Setup function to register the router with the FastAPI app"""
